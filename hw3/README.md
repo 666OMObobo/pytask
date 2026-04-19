@@ -203,24 +203,55 @@ print("""
 # 黄浩楠-25361026-第三次人工智能编程作业
 
 ## 1. 任务拆解与 AI 协作策略
-步骤1：调用模块部分，大致框架，确定任务
-步骤2：任务1,2,3,4,5,6分区，确定处理哪些数据，得到哪些数据，在哪些任务得到/使用
-步骤3：利用ai,调用我需要的函数
-步骤4：利用课件，ai把代码组合起来
+步骤1：调用模块部分，大致框架，确定任务  
+步骤2：任务1,2,3,4,5,6分区，确定处理哪些数据，得到哪些数据，在哪些任务得到/使用  
+步骤3：利用ai,调用我需要的函数  
+步骤4：利用课件，ai把代码组合起来  
+步骤4：ai检查
 
 ## 2. 核心 Prompt 迭代记录
-（展示一次你修改 Prompt 让 AI 代码从'不符合要求'变成'符合规范'的迭代过程）
-初代 Prompt：...
-AI 生成的问题：...（例如：用了 seaborn 替代 matplotlib 画柱状图 / 函数签名不符合要求 / PHF 计算方法错误）
-优化后的 Prompt：...
+（展示一次你修改 Prompt 让 AI 代码从'不符合要求'变成'符合规范'的迭代过程）  
+初代 Prompt：读取ICData.csv的文件  
+AI 生成的问题： 程序无法查找到该文件，因为该文件不在py文件里  
+优化后的 Prompt： 读取与该程序无法处同一文件夹的csv文件  
 
 ## 3. Debug 记录
 （记录一次解决报错的过程，例如：时区解析报错 / 热力图中文乱码 / ride_stops=0 导致的结果偏差）
-报错现象：...
-解决过程：...
+报错现象：柱状图中文乱码
+解决过程：问ai可能出现的错误，在把代码拍给ai,发现“SimHei”打成“SimHie”
 
 ## 4. 人工代码审查（逐行中文注释）
 （贴出任务4 PHF 计算的核心代码，并加上你自己的逐行中文注释）
 ```python
 # 贴入代码及注释
+hour_count=data.groupby("hour").size() #按小时分组
+plt.rcParams["font.sans-serif"]=["SimHei"] #识别中文
+plt.rcParams["axes.unicode_minus"]=False #负号
+colors=["red" if hour<7 else "blue" if hour>=22 else "green" for hour in hour_count.index] #不同区段颜色
+plt.bar(x=hour_count.index,height=hour_count.values,color=colors) #画柱状图
+plt.title("24小时刷卡量分布柱状图") 标题
+plt.xlabel("小时") #X轴
+plt.ylabel("刷卡量") #Y轴
+plt.xticks(np.arange(0, 24, 2)) #步长
+plt.grid(axis='y', linestyle='--', alpha=0.7) #网格
+from matplotlib.patches import Patch #自定意图例
+legend_elements = [
+    Patch(facecolor='red', label='早间(<7点)'),
+    Patch(facecolor='green', label='白天(7-22点)'),
+    Patch(facecolor='blue', label='夜间(≥22点)')
+] #图例分别
+plt.legend(handles=legend_elements, loc="upper right", fontsize=11) #图例
+plt.tight_layout() #
+save_path=os.path.join(folder,"hour_distribution.png") #保存路径
+plt.savefig(save_path,dpi=150) #保存
+plt.show() #
+
 ```
+
+
+
+
+
+
+
+
