@@ -230,7 +230,7 @@ rf_mae = mean_absolute_error(y_test_true, rf_pred_true)  # 计算随机森林的
 rf_rmse = np.sqrt(mean_squared_error(y_test_true, rf_pred_true))  # 计算随机森林的 RMSE
 
 print("\n" + "="*40)  # 打印分割线
-print("📊 测试集评估报告 (区域 ID: {})".format(top1_zone))  # 打印报告标题和区域ID
+print("测试集评估报告 (区域 ID: {})".format(top1_zone))  # 打印报告标题和区域ID
 print("="*40)  # 打印分割线
 print(f"神经网络 -> MAE: {nn_mae:.2f}, RMSE: {nn_rmse:.2f}")  # 打印神经网络的得分，保留两位小数
 print(f"随机森林 -> MAE: {rf_mae:.2f}, RMSE: {rf_rmse:.2f}")  # 打印随机森林的得分，保留两位小数
@@ -260,7 +260,7 @@ plt.grid(True, alpha=0.3)  # 加上半透明的网格
 plt.show()  # 把画好的预测对比图弹出来显示
 
 # 简单分析结论
-print("\n💡 简单分析：")  # 打印分析标题
+print("\n简单分析：")  # 打印分析标题
 print("神经网络（类似深度学习）通常能更好地捕捉早晚高峰的平滑变化趋势。")  # 打印神经网络的优势
 print("随机森林虽然快，但预测结果可能会像台阶一样一顿一顿的（阶梯状）。")  # 打印随机森林的特点
 
@@ -316,35 +316,35 @@ class TravelAssistant(cmd.Cmd):
             target_data = target_data.set_index('tpep_pickup_datetime')
             # 筛选出该小时的平均订单量
             avg_demand = target_data[target_data.index.hour == hour].shape[0] / max(1, len(target_data[target_data.index.hour == hour].index.date.unique()))
-            print(f"\n📊 数字结论：区域 {location_id} 在 {hour} 点的平均订单量约为 {avg_demand:.0f} 单。")
+            print(f"\n数字结论：区域 {location_id} 在 {hour} 点的平均订单量约为 {avg_demand:.0f} 单。")
             
             # 绘制该区域24小时趋势图
             hourly_stats = target_data.resample('h').size()
             plt.figure(figsize=(10, 4))
             plt.plot(hourly_stats.index.hour, hourly_stats.values, marker='o')
             chart_path = self.save_plot(f'区域 {location_id} 24小时订单趋势', f'chart_zone_{location_id}.png')
-            print(f"📈 图表已生成：{chart_path}\n")
+            print(f"图表已生成：{chart_path}\n")
 
         # 问题类型 2：高峰时段查询（如：“哪个时间段订单最多？”）
         elif '高峰' in user_input or '最多' in user_input:
             hourly_dist = self.df.index.hour.value_counts().sort_index()
             peak_hour = hourly_dist.idxmax()
-            print(f"\n📊 数字结论：全平台订单最高峰的时段是 {peak_hour} 点，共有 {hourly_dist.max()} 单。")
+            print(f"\n数字结论：全平台订单最高峰的时段是 {peak_hour} 点，共有 {hourly_dist.max()} 单。")
             
             plt.figure(figsize=(10, 4))
             hourly_dist.plot(kind='bar', color='skyblue')
             chart_path = self.save_plot('全平台24小时订单分布', 'chart_peak_hours.png')
-            print(f"📈 图表已生成：{chart_path}\n")
+            print(f"图表已生成：{chart_path}\n")
 
         # 问题类型 3：区域排名（如：“给我看看热门区域排名”）
         elif '排名' in user_input or '热门' in user_input:
             top_zones = self.df['PULocationID'].value_counts().head(5)
-            print(f"\n📊 数字结论：最热门的 Top 5 区域分别是：\n{top_zones.to_string()}")
+            print(f"\n数字结论：最热门的 Top 5 区域分别是：\n{top_zones.to_string()}")
             
             plt.figure(figsize=(10, 4))
             top_zones.plot(kind='barh', color='lightcoral')
             chart_path = self.save_plot('热门区域 Top 5 排名', 'chart_top_zones.png')
-            print(f"📈 图表已生成：{chart_path}\n")
+            print(f"图表已生成：{chart_path}\n")
 
         # 问题类型 4：需求预测（调用 M3 模型，如：“预测一下区域 50 下一个小时的需求”）
         elif '预测' in user_input and self.model:
@@ -353,16 +353,16 @@ class TravelAssistant(cmd.Cmd):
                 return
             # 这里简化处理，实际需要将区域 50 的历史数据按 M3 的格式构造出 X_test
             # 为了演示，这里假设我们取该区域最后 24 小时数据喂给模型
-            print(f"\n🤖 正在调用 M3 神经网络模型进行预测...")
+            print(f"\n正在调用 M3 神经网络模型进行预测...")
             # 模拟一个预测结果（实际需按 M3 的 create_sequences 处理真实数据）
             fake_pred = 50.5 
-            print(f"📊 数字结论：模型预测区域 {location_id} 下一小时的订单量约为 {fake_pred:.0f} 单。")
-            print("📈 预测趋势图请参考 M3 阶段生成的对比图。\n")
+            print(f"数字结论：模型预测区域 {location_id} 下一小时的订单量约为 {fake_pred:.0f} 单。")
+            print("预测趋势图请参考 M3 阶段生成的对比图。\n")
 
         # 问题类型 5：费用估算（如：“大概需要多少费用？”）
         elif '费用' in user_input or '多少钱' in user_input:
             avg_fare = self.df['fare_amount'].mean()
-            print(f"\n📊 数字结论：根据历史数据，本平台的平均订单费用约为 {avg_fare:.2f} 元。")
+            print(f"\n数字结论：根据历史数据，本平台的平均订单费用约为 {avg_fare:.2f} 元。")
             
             plt.figure(figsize=(10, 4))
             self.df['fare_amount'].hist(bins=30, color='teal', alpha=0.7)
